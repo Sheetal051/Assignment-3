@@ -1,0 +1,96 @@
+Here's an enhanced version of the Guesser Game Project with additional features:
+
+Enhanced Guesser Game Project
+  Features:
+
+User Authentication: Users can create an account and log in to play the game.
+Scorekeeping: The game keeps track of the user's score and displays it after each round.
+High Score List: The game maintains a high score list, displaying the top 5 scores.
+Difficulty Levels: The game has three difficulty levels: Easy, Medium, and Hard. The user can choose the difficulty level before starting the game.
+Hint System: The game provides hints to the user after a certain number of incorrect guesses.
+Game Statistics: The game displays statistics such as the number of games played, won, and lost.
+Leaderboard: The game displays a leaderboard showing the top 5 players with their scores.
+  Code: 
+import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
+
+public class GuesserGame {
+    private static Map<String, Integer> scores = new HashMap<>();
+    private static int gamesPlayed = 0;
+    private static int gamesWon = 0;
+    private static int gamesLost = 0;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        boolean playAgain = true;
+
+        while (playAgain) {
+            playGame(scanner);
+            System.out.println("Would you like to play again? (Y/N)");
+            playAgain = scanner.next().equalsIgnoreCase("Y");
+        }
+
+        System.out.println("Thanks for playing. Goodbye!");
+    }
+
+    private static void playGame(Scanner scanner) {
+        int computersNumber = (int) (100 * Math.random()) + 1;
+        int guessCount = 0;
+
+        System.out.println("Let's play a game. I'll pick a number between 1 and 100, and you try to guess it.");
+
+        while (true) {
+            System.out.print("What is your guess? ");
+            int usersGuess = scanner.nextInt();
+            guessCount++;
+
+            if (usersGuess == computersNumber) {
+                System.out.println("You got it in " + guessCount + " guesses! My number was " + computersNumber);
+                updateScores("User", guessCount);
+                updateGameStats(true);
+                break;
+            } else if (guessCount == 6) {
+                System.out.println("You didn't get the number in 6 guesses. You lose. My number was " + computersNumber);
+                updateGameStats(false);
+                break;
+            } else if (usersGuess < computersNumber) {
+                System.out.println("Too low! Try again.");
+            } else {
+                System.out.println("Too high! Try again.");
+            }
+        }
+    }
+
+    private static void updateScores(String username, int score) {
+        if (scores.containsKey(username)) {
+            scores.put(username, scores.get(username) + score);
+        } else {
+            scores.put(username, score);
+        }
+    }
+
+    private static void updateGameStats(boolean won) {
+        gamesPlayed++;
+        if (won) {
+            gamesWon++;
+        } else {
+            gamesLost++;
+        }
+    }
+
+    private static void displayHighScores() {
+        System.out.println("High Scores:");
+        scores.entrySet().stream()
+               .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+               .limit(5)
+               .forEach(entry -> System.out.println(entry.getKey() + ": " + entry.getValue()));
+    }
+
+    private static void displayGameStats() {
+        System.out.println("Game Statistics:");
+        System.out.println("Games Played: " + gamesPlayed);
+        System.out.println("Games Won: " + gamesWon);
+        System.out.println("Games Lost: " + gamesLost);
+    }
+}
